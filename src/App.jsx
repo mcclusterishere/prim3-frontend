@@ -1,33 +1,32 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
 
 function App() {
   const [response, setResponse] = useState("");
 
-const handleClick = () => {
-  fetch('https://prim3-backend.onrender.com/prim3', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: "Hello Prim3 AGI!" })
-  })
-  .then(res => res.json())
-  .then(data => {
-    setResponse(data.response || data.message || "No valid response received");
-  })
-  .catch(err => {
-    console.error("API call failed:", err);
-    setResponse("API call failed");
-  });
-};
+  const fetchBackend = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/prim3`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: "Hello Prim3 AGI!" })
+      });
+
+      const data = await res.json();
+      setResponse(`Response from backend: ${data.response}`);
+    } catch (error) {
+      setResponse(`API call failed: ${error.message}`);
+    }
+  };
 
   return (
     <div>
       <h1>Prim3 AGI Frontend Integration</h1>
-      <button onClick={handleClick}>
-        Click to test backend!
-      </button>
-      <p>Response from backend: {response}</p>
+      <button onClick={fetchBackend}>Click to test backend!</button>
+      <p>{response}</p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
